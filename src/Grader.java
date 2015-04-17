@@ -1,6 +1,18 @@
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * ---------------------------------------------
+ * Grader.java
+ * Description: Main function
+ *
+ * Class: CS 421 - Spring 2015
+ * System: Eclipse Luna, Mac Mavericks OSX
+ * Author: Arthur Nishimoto (anishi2) and Jenny Sum (sum1)
+ * Version: 1.0
+ *
+ * ---------------------------------------------
+ */
 
 public class Grader {
 	private static int spellingErrors;
@@ -9,6 +21,7 @@ public class Grader {
 	private static int wordCount;
 	private static int sentenceCount;
 	private static int finalScore;
+	private static String finalRating;
 	
 	enum ScoreType { Low, Medium, High };
 	
@@ -55,7 +68,10 @@ public class Grader {
 				wordCount, sentenceCount);
 		
 		finalScore = scores.getFinalScore();
-		System.out.println("Rating: " + finalScore);
+		System.out.println("Score: " + finalScore);
+		
+		finalRating = scores.getFinalRating();
+		System.out.println("Rating: " + finalRating);
 	}
 
 }

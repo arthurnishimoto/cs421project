@@ -8,6 +8,19 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * ---------------------------------------------
+ * Parser.java
+ * Description: Parser that also counts amount of words and sentences
+ *
+ * Class: CS 421 - Spring 2015
+ * System: Eclipse Luna, Mac Mavericks OSX
+ * Author: Jenny Sum (sum1)
+ * Version: 1.0
+ *
+ * ---------------------------------------------
+ */
+
 public class Parser {
 	
 	private ArrayList<String> wordList;

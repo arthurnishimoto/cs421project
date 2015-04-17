@@ -11,19 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
-
-
-
-
-
-
-
-
-
-
 import opennlp.tools.postag.POSModel;
-
-
 import opennlp.tools.postag.POSTaggerME;
 
 
@@ -231,7 +219,7 @@ public class SpellCheck
 		  String sent[] = text.toArray(new String[text.size()]);
 		  String tags[] = tagger.tag( sent );
 		  
-		  // Print tagged words
+		  // Parsing 
 		  for(int i = 0; i < tags.length; i++)
 		  {
 			  System.out.print(sent[i]+"|"+tags[i] + " ");
