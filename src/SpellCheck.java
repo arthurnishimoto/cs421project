@@ -49,7 +49,7 @@ public class SpellCheck
 	//SpellChecker spellchecker;
 	int spellingErrors = 0;
 	
-	boolean showDetail = true;
+	boolean showDetail = false;
 	
 	/*
 	public static void main(String[] args)
@@ -141,7 +141,7 @@ public class SpellCheck
 	private void parseLines(List<String> essayLines) throws IOException
 	{
 		spellingErrors = 0;
-		System.out.println(essayLines.size());
+		//System.out.println(essayLines.size());
         for( int i = 0; i < essayLines.size(); i++ )
         {
         	String line = essayLines.get(i);

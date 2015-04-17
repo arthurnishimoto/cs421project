@@ -25,42 +25,60 @@ public class Grader {
 	
 	enum ScoreType { Low, Medium, High };
 	
+	static SpellCheck spellChecker;
+	
 	public static void main(String[] args) throws IOException {
-		String inputFile = args[0];
+		String inputFile;
 		
-		boolean useTokenized = false;
-		ScoreType scoreType = ScoreType.High;
+		spellChecker = new SpellCheck("./data/fulldictionary01.txt");
 		
-		// Setup data paths --------------------------------
-		String essayPath = "./data/";
-		if(useTokenized)
-			essayPath += "P5-tokenized/";
-		else
-			essayPath += "P5-original/";
-		
-		switch(scoreType)
+		// No arguments. Uses following variables to search/grade directories
+		if( args.length == 0 )
 		{
-			case High:	essayPath += "high/";	break;
-			case Medium:essayPath += "medium/";	break;
-			case Low:	essayPath += "low/";	break;
-			default:	essayPath += "high/";	break;
+			boolean useTokenized = false;
+			ScoreType scoreType = ScoreType.High;
+			
+			// Setup data paths --------------------------------
+			String essayPath = "./data/";
+			if(useTokenized)
+				essayPath += "P5-tokenized/";
+			else
+				essayPath += "P5-original/";
+			
+			switch(scoreType)
+			{
+				case High:	essayPath += "high/";	break;
+				case Medium:essayPath += "medium/";	break;
+				case Low:	essayPath += "low/";	break;
+				default:	essayPath += "high/";	break;
+			}
+
+			// Read the file
+			File dir = new File(essayPath);
+			File[] filesList = dir.listFiles();
+			for( int i = 0; i < filesList.length; i++ )
+			{
+				inputFile = filesList[i].getPath();
+				System.out.println("Reading: "+inputFile);
+				gradeFile(inputFile);
+			}
+			// -------------------------------------------------
 		}
-		
-		SpellCheck spellChecker = new SpellCheck("./data/fulldictionary01.txt");
-		
-		// Read the file
-		File dir = new File(essayPath);
-		File[] filesList = dir.listFiles();
-		for( int i = 0; i < filesList.length; i++ )
+		else // Single argument: specific file to grade
 		{
-			inputFile = filesList[i].getPath();
-			spellChecker.parseFile(inputFile);
+			inputFile = args[0];
+
+			System.out.println("Reading: "+inputFile);
+			gradeFile(inputFile);
 		}
-		// -------------------------------------------------
-		
+	}
+	
+	static void gradeFile(String inputFile) throws IOException
+	{
 		Parser parser = new Parser();
 		parser.parseFile(inputFile); 
-
+		spellChecker.parseFile(inputFile);
+		
 		spellingErrors = spellChecker.getSpellingErrors();
 		wordCount = parser.getWordCount();
 		sentenceCount = parser.getSentenceCount();
@@ -75,5 +93,4 @@ public class Grader {
 		finalRating = scores.getFinalRating();
 		System.out.println("Rating: " + finalRating);
 	}
-
 }
