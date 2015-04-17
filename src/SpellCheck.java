@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,21 +9,25 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.Set;
 
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 
-
 // Uses Apache Lucene Core
 // https://lucene.apache.org/core/
+/*
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.spell.*; // lucene-suggest-5.1.0.jar
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+*/
 
 /**
  * ---------------------------------------------
@@ -41,10 +46,10 @@ public class SpellCheck
 {
 	public enum ScoreType { Low, Medium, High };
 	
-	SpellChecker spellchecker;
+	//SpellChecker spellchecker;
 	int spellingErrors = 0;
 	
-	boolean showDetail = false;
+	boolean showDetail = true;
 	
 	/*
 	public static void main(String[] args)
@@ -83,6 +88,8 @@ public class SpellCheck
 	}
 	*/
 	
+	HashSet<String> wordList;
+	
 	// Takes in a filename
 	public void parseFile(String filePath) throws IOException
 	{
@@ -106,7 +113,7 @@ public class SpellCheck
 	
 	
 	// Takes in a file object (original version)
-	public void essayParser(File essay)
+	public void fileParser(File essay)
 	{
 		if (essay.isFile()) {
 	        System.out.println(essay.getName());
@@ -140,12 +147,23 @@ public class SpellCheck
         	String line = essayLines.get(i);
         	//if( line.length() > 0 )
         	//	System.out.println("Line "+i+"] "+line);
-        	String[] words = line.split("[ ;!?:,\".\t//]");
+        	String[] words = line.split("[ -;!?:,\".\t//()]");
+        	
+        	//if(showDetail)
+			//	System.out.println("Misspelled words:");
         	for( int j = 0; j < words.length; j++ )
 	        {
         		if( words[j].length() > 0 )
         		{
         			String word = words[j];
+        			
+        			if( !CheckSpelling(word) )
+        			{
+        				if(showDetail)
+        					System.out.println(" '"+word+"'*");
+        				spellingErrors++;
+        			}
+        			/*// If we cared about correcting/suggestions
         			String[] suggestions = CheckSpelling(word, 3);
         			if( suggestions.length == 0 )
         			{
@@ -163,6 +181,7 @@ public class SpellCheck
 	        		        }
         				}
         			}
+        			*/
         		}
 	        }
         }
@@ -172,38 +191,31 @@ public class SpellCheck
 	
 	public SpellCheck(String dictionaryPath)
 	{
-		File dir = new File("./spellcheck");
-		Path path = dir.toPath();
+		wordList = new HashSet<String>();
 
+		Scanner scanInput = null;
 		try
-		{
-			Directory spellIndexDirectory = FSDirectory.open(path);
-			spellchecker = new SpellChecker(spellIndexDirectory);
-			//spellchecker.clearIndex();
-			//spellchecker.setAccuracy((float) 0.80); // Default 0.5
+		{		
+			scanInput = new Scanner(new FileReader(dictionaryPath));
+			while(scanInput.hasNext()){
+				String next = scanInput.next();
+				wordList.add(next);
+			}
 			
-			//System.out.println(spellchecker.getStringDistance());
-			//spellchecker.setStringDistance(new NGramDistance(1));
-			
-			//JaroWinklerDistance strDist = new JaroWinklerDistance();
-			//strDist.setThreshold((float)0.0);
-			//spellchecker.setStringDistance(strDist);
-			
-			// To index a field of a user index:
-			//spellchecker.indexDictionary(new LuceneDictionary(my_lucene_reader, a_field));
-			
-			// To index a file containing words:
-			//Analyzer analyzer = new StandardAnalyzer();
-			//IndexWriterConfig config = new IndexWriterConfig(analyzer);
-			//spellchecker.indexDictionary(new PlainTextDictionary(new File(dictionaryPath).toPath()), config, true);
-			//spellchecker.clearIndex();
 		}
-		catch (IOException e)
+		catch (FileNotFoundException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-				
+		catch (NoSuchElementException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		scanInput.close();
+		
+		System.out.println(wordList.size()+" words added to the dictionary");
 	}
 	
 	private void checkPOS(List<String> text)
@@ -242,6 +254,88 @@ public class SpellCheck
 		}
 		
 	}
+	
+	private boolean CheckSpelling(String word)
+	{
+		boolean validWord = true;
+		
+		// Catch proper nouns before ignoring case (for sentence starts)
+		if( wordList.contains(word) ) 
+			return true;
+		
+		// Check for numbers
+		try
+		{
+			if( Float.valueOf(word) != null )
+				return true;
+		}
+		catch(NumberFormatException e)
+		{
+		}
+		
+		word = word.toLowerCase();
+		
+		// Check for root word (cases the dictionary tends to fail even if these words are there)
+		if( wordList.contains( modifyWordEnding(word, "s", "") ) )
+		{
+
+		}
+		else if( wordList.contains( modifyWordEnding(word, "d", "") ) )
+		{
+
+		}
+		else if( wordList.contains( modifyWordEnding(word, "ed", "") ) )
+		{
+
+		}
+		else if( wordList.contains( modifyWordEnding(word, "ied", "y") ) )
+		{
+
+		}
+		else if( wordList.contains( modifyWordEnding(word, "es", "") ) )
+		{
+
+		}
+		else if( wordList.contains( modifyWordEnding(word, "er", "") ) )
+		{
+
+		}
+		else if( wordList.contains( modifyWordEnding(word, "ing", "") ) )
+		{
+
+		}
+		else if( wordList.contains( modifyWordEnding(word, "est", "") ) )
+		{
+
+		}
+		else if( wordList.contains( modifyWordEnding(word, "ing", "e") ) )
+		{
+
+		}
+		else if( wordList.contains( modifyWordEnding(word, "ies", "y") ) )
+		{
+			
+		}
+		else if( wordList.contains(word+"s") )
+		{
+
+		}
+		else if( !wordList.contains(word) ) 
+			validWord = false;
+		
+		return validWord;
+	}
+	
+	private String modifyWordEnding(String word, String oldEnding, String newEnding)
+	{
+		if( word.endsWith(oldEnding) )
+			return word.substring(0, word.length()-oldEnding.length())+newEnding;
+		else
+			return word;
+	}
+	
+	// lucene spell check
+	/*
 	private String[] CheckSpelling(String word, int suggestionCount) throws IOException
 	{
 		word = word.toLowerCase();
@@ -341,4 +435,5 @@ public class SpellCheck
 		
 		return suggestions;
 	}
+	*/
 }

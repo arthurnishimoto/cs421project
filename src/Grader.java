@@ -29,7 +29,7 @@ public class Grader {
 		String inputFile = args[0];
 		
 		boolean useTokenized = false;
-		ScoreType scoreType = ScoreType.Medium;
+		ScoreType scoreType = ScoreType.High;
 		
 		// Setup data paths --------------------------------
 		String essayPath = "./data/";
@@ -46,19 +46,21 @@ public class Grader {
 			default:	essayPath += "high/";	break;
 		}
 		
+		SpellCheck spellChecker = new SpellCheck("./data/fulldictionary01.txt");
+		
 		// Read the file
 		File dir = new File(essayPath);
 		File[] filesList = dir.listFiles();
-		
-		inputFile = filesList[8].getPath();
+		for( int i = 0; i < filesList.length; i++ )
+		{
+			inputFile = filesList[i].getPath();
+			spellChecker.parseFile(inputFile);
+		}
 		// -------------------------------------------------
 		
 		Parser parser = new Parser();
 		parser.parseFile(inputFile); 
-		
-		SpellCheck spellChecker = new SpellCheck("./data/fulldictionary01.txt");
-		spellChecker.parseFile(inputFile);
-		
+
 		spellingErrors = spellChecker.getSpellingErrors();
 		wordCount = parser.getWordCount();
 		sentenceCount = parser.getSentenceCount();

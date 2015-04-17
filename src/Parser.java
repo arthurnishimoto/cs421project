@@ -58,6 +58,7 @@ public class Parser {
 			String next = scanInput.next();
 			inputList.add(next);
 		}
+		scanInput.close();
 		return inputList;
 	}
 	
@@ -83,6 +84,7 @@ public class Parser {
 				  sentenceEnder++;
 			  }
 			}
+			reader.close();
 		return sentenceEnder;
 	}
 }
