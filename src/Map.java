@@ -1,3 +1,5 @@
+import java.io.PrintStream;
+
 /**
  * ---------------------------------------------
  * Map.java
@@ -18,15 +20,30 @@ public class Map {
 	private int _3a;
 	private int finalScore;
 	private String finalRating;
-
+	
+	// Part 2
+	private int _1d;
+	private int _2a;
+	private int _2b;
+	
 	public void mapScores(int spellingErrors, int agreementErrors,
-			int verbTenseErrors, int wordCount, int sentenceCount) {
+			int verbTenseErrors, int wordCount, int sentenceCount, PrintStream out) {
 		_1a = score_1a(spellingErrors);
 		_1b = score_1b(agreementErrors);
 		_1c = score_1c(verbTenseErrors);
 		_3a = score_3a(wordCount, sentenceCount);
 		finalScore = (_1a + _1b + _1c + _3a)/4;
 		finalRating = mapRating(finalScore);
+		
+		out.print(_1a+"\t");
+		out.print(_1b+"\t");
+		out.print(_1c+"\t");
+		out.print(_1d+"\t");
+		out.print(_2a+"\t");
+		out.print(_2b+"\t");
+		out.print(_3a+"\t");
+		out.print(finalScore+"\t");
+		out.println(finalRating);
 	}
 	
 	//getter for overall int score

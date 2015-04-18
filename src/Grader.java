@@ -1,5 +1,7 @@
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 /**
  * ---------------------------------------------
@@ -37,37 +39,57 @@ public class Grader {
 		
 		spellChecker = new SpellCheck("./data/fulldictionary01.txt");
 		
+		// Setup output file
+		PrintStream out = new PrintStream(new FileOutputStream("./output/results.txt"));
+					
 		// No arguments. Uses following variables to search/grade directories
-		if( args.length == 0 )
+		if( args.length == 1) // Single argument: specific file to grade
 		{
+			inputFile = args[0];
+
+			System.out.println("Reading: "+inputFile);
+			gradeFile(inputFile, out);
+		}
+		else
+		{
+			boolean useTrainingSet = true;
 			boolean useTokenized = true;
-			ScoreType scoreType = ScoreType.Low;
+			ScoreType scoreType = ScoreType.High;
 			int essayLimit = 100;
 			
 			// Setup data paths --------------------------------
-			String essayPath = "./data/";
-			if(useTokenized)
-				essayPath += "P5-tokenized/";
+			String essayPath = "./input/";
+			if(useTrainingSet)
+				essayPath += "training/";
 			else
-				essayPath += "P5-original/";
+				essayPath += "test/";
+			if(useTokenized)
+				essayPath += "tokenized/";
+			else
+				essayPath += "original/";
 			
-			switch(scoreType)
+			if(useTrainingSet)
 			{
-				case High:	essayPath += "high/";	break;
-				case Medium:essayPath += "medium/";	break;
-				case Low:	essayPath += "low/";	break;
-				default:	essayPath += "high/";	break;
+				switch(scoreType)
+				{
+					case High:	essayPath += "high/";	break;
+					case Medium:essayPath += "medium/";	break;
+					case Low:	essayPath += "low/";	break;
+					default:	essayPath += "high/";	break;
+				}
 			}
-
 			// Read the file
 			File dir = new File(essayPath);
 			File[] filesList = dir.listFiles();
+			
 			for( int i = 0; i < filesList.length; i++ )
 			{
 				inputFile = filesList[i].getPath();
 				System.out.println("Reading: "+inputFile);
-				gradeFile(inputFile);
 				
+				out.print(filesList[i].getName()+"\t");
+				
+				gradeFile(inputFile,out);
 				if(i >= essayLimit - 1)
 					break;
 			}
@@ -78,20 +100,15 @@ public class Grader {
 			System.out.println("totalVerbTenseErrors: "+totalVerbTenseErrors[0]+" "+totalVerbTenseErrors[1]/(float)filesList.length+" "+totalVerbTenseErrors[2]);
 			// -------------------------------------------------
 		}
-		else // Single argument: specific file to grade
-		{
-			inputFile = args[0];
-
-			System.out.println("Reading: "+inputFile);
-			gradeFile(inputFile);
-		}
+		out.close();
 	}
 	
-	static void gradeFile(String inputFile) throws IOException
+	static void gradeFile(String inputFile, PrintStream out) throws IOException
 	{
 		Parser parser = new Parser();
 		parser.parseFile(inputFile); 
 		spellChecker.parseFile(inputFile);
+		
 		
 		spellingErrors = spellChecker.getSpellingErrors();
 		agreementErrors = spellChecker.getAgreementErrors();
@@ -101,7 +118,7 @@ public class Grader {
 		
 		Map scores = new Map();
 		scores.mapScores(spellingErrors, agreementErrors, verbTenseErrors,
-				wordCount, sentenceCount);
+				wordCount, sentenceCount, out);
 		
 		finalScore = scores.getFinalScore();
 		System.out.println("Score: " + finalScore);
