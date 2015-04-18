@@ -27,6 +27,11 @@ public class Grader {
 	
 	static SpellCheck spellChecker;
 	
+	// [0] min, [1] count, [2] max
+	private static int[] totalSpellingErrors = {9999,0,0};
+	private static int[] totalAgreementErrors = {9999,0,0};
+	private static int[] totalVerbTenseErrors = {9999,0,0};
+
 	public static void main(String[] args) throws IOException {
 		String inputFile;
 		
@@ -36,7 +41,7 @@ public class Grader {
 		if( args.length == 0 )
 		{
 			boolean useTokenized = true;
-			ScoreType scoreType = ScoreType.Medium;
+			ScoreType scoreType = ScoreType.Low;
 			int essayLimit = 100;
 			
 			// Setup data paths --------------------------------
@@ -66,6 +71,11 @@ public class Grader {
 				if(i >= essayLimit - 1)
 					break;
 			}
+			
+			System.out.println("Essays parsed: "+filesList.length);
+			System.out.println("totalSpellingErrors: "+totalSpellingErrors[0]+" "+totalSpellingErrors[1]/(float)filesList.length+" "+totalSpellingErrors[2]);
+			System.out.println("totalAgreementErrors: "+totalAgreementErrors[0]+" "+totalAgreementErrors[1]/(float)filesList.length+" "+totalAgreementErrors[2]);
+			System.out.println("totalVerbTenseErrors: "+totalVerbTenseErrors[0]+" "+totalVerbTenseErrors[1]/(float)filesList.length+" "+totalVerbTenseErrors[2]);
 			// -------------------------------------------------
 		}
 		else // Single argument: specific file to grade
@@ -98,5 +108,22 @@ public class Grader {
 		
 		finalRating = scores.getFinalRating();
 		System.out.println("Rating: " + finalRating);
+		
+		totalSpellingErrors[1] += spellingErrors;
+		totalAgreementErrors[1] += agreementErrors;
+		totalVerbTenseErrors[1] += verbTenseErrors;
+		
+		if( totalSpellingErrors[0] > spellingErrors )
+			totalSpellingErrors[0] = spellingErrors;
+		if( totalSpellingErrors[2] < spellingErrors )
+			totalSpellingErrors[2] = spellingErrors;
+		if( totalAgreementErrors[0] > agreementErrors )
+			totalAgreementErrors[0] = agreementErrors;
+		if( totalAgreementErrors[2] < agreementErrors )
+			totalAgreementErrors[2] = agreementErrors;
+		if( totalVerbTenseErrors[0] > verbTenseErrors )
+			totalVerbTenseErrors[0] = verbTenseErrors;
+		if( totalVerbTenseErrors[2] < verbTenseErrors )
+			totalVerbTenseErrors[2] = verbTenseErrors;
 	}
 }
