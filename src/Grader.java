@@ -35,8 +35,9 @@ public class Grader {
 		// No arguments. Uses following variables to search/grade directories
 		if( args.length == 0 )
 		{
-			boolean useTokenized = false;
-			ScoreType scoreType = ScoreType.High;
+			boolean useTokenized = true;
+			ScoreType scoreType = ScoreType.Medium;
+			int essayLimit = 100;
 			
 			// Setup data paths --------------------------------
 			String essayPath = "./data/";
@@ -61,6 +62,9 @@ public class Grader {
 				inputFile = filesList[i].getPath();
 				System.out.println("Reading: "+inputFile);
 				gradeFile(inputFile);
+				
+				if(i >= essayLimit - 1)
+					break;
 			}
 			// -------------------------------------------------
 		}
@@ -80,6 +84,8 @@ public class Grader {
 		spellChecker.parseFile(inputFile);
 		
 		spellingErrors = spellChecker.getSpellingErrors();
+		agreementErrors = spellChecker.getAgreementErrors();
+		verbTenseErrors = spellChecker.getVerbErrors();
 		wordCount = parser.getWordCount();
 		sentenceCount = parser.getSentenceCount();
 		

@@ -58,16 +58,16 @@ public class Map {
 	
 	//rates essay 1-5 based on amount of spelling errors
 	private int score_1a (int spellingErrors) {
-		if (spellingErrors < 10) {
+		if (spellingErrors <= 5) {
 			return 5;
 		}
-		else if (spellingErrors < 20 && spellingErrors > 10) {
+		else if (spellingErrors <= 10 && spellingErrors > 5) {
 			return 4;
 		}
-		else if (spellingErrors < 30 && spellingErrors > 20) {
+		else if (spellingErrors <= 15 && spellingErrors > 10) {
 			return 3;
 		}
-		else if (spellingErrors < 40 && spellingErrors > 30) {
+		else if (spellingErrors <= 20 && spellingErrors > 15) {
 			return 2;
 		}
 		else {
@@ -77,16 +77,16 @@ public class Map {
 	
 	//rates essay 1-5 based on agreement errors
 	private int score_1b (int agreementErrors) {
-		if (agreementErrors < 10) {
+		if (agreementErrors <= 5) {
 			return 5;
 		}
-		else if (agreementErrors < 20 && agreementErrors > 10) {
+		else if (agreementErrors <= 10 && agreementErrors > 5) {
 			return 4;
 		}
-		else if (agreementErrors < 30 && agreementErrors > 20) {
+		else if (agreementErrors <= 20 && agreementErrors > 10) {
 			return 3;
 		}
-		else if (agreementErrors < 40 && agreementErrors > 30) {
+		else if (agreementErrors <= 30 && agreementErrors > 20) {
 			return 2;
 		}
 		else {

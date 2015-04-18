@@ -15,8 +15,11 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Set;
 
+import opennlp.tools.chunker.ChunkerME;
+import opennlp.tools.chunker.ChunkerModel;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
+import opennlp.tools.util.Sequence;
 
 // Uses Apache Lucene Core
 // https://lucene.apache.org/core/
@@ -48,8 +51,11 @@ public class SpellCheck
 	
 	//SpellChecker spellchecker;
 	int spellingErrors = 0;
+	int subjectVerbAgreementErrors = 0;
+	int verbErrors = 0;
 	
 	boolean showDetail = false;
+	boolean showPOSDetail = false;
 	
 	/*
 	public static void main(String[] args)
@@ -138,6 +144,16 @@ public class SpellCheck
 		return spellingErrors;
 	}
 	
+	public int getAgreementErrors()
+	{
+		return subjectVerbAgreementErrors;
+	}
+	
+	public int getVerbErrors()
+	{
+		return verbErrors;
+	}
+	
 	private void parseLines(List<String> essayLines) throws IOException
 	{
 		spellingErrors = 0;
@@ -221,23 +237,158 @@ public class SpellCheck
 	private void checkPOS(List<String> text)
 	{
 		InputStream modelIn = null;
-
+		subjectVerbAgreementErrors = 0;
+		verbErrors = 0;
+		
 		try {
 		  modelIn = new FileInputStream("./data/en-pos-maxent.bin");
 		  POSModel model = new POSModel(modelIn);
-		  
 		  POSTaggerME tagger = new POSTaggerME(model);
+		  
+		  modelIn = new FileInputStream("./data/en-chunker.bin");
+		  ChunkerModel chunkerModel = new ChunkerModel(modelIn);
+		  ChunkerME chunker = new ChunkerME(chunkerModel);
 		  
 		  String sent[] = text.toArray(new String[text.size()]);
 		  String tags[] = tagger.tag( sent );
 		  
+		  //Sequence[] topSequences = chunker.topKSequences(sent, tags);
+
+		  //String tag[] = chunker.chunk(sent, tags);
+		  //for( int i = 0; i < tag.length; i++ )
+		  //System.out.println(tag[i]);
+		  
+		  //http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
+		  
 		  // Parsing 
+		  // -1 = unknown, 0 = false, 1 = true
+		  int subjectSingular = -1;
+		  int subjectPronoun = -1;
+		  int verbSingular = -1;
+		  int subjectThirdPerson = -1;
+		  int verbThirdPerson = -1;
+		  // Used for distance
+		  int subjectPos = -1;
+		  int verbPos = -1;
+
 		  for(int i = 0; i < tags.length; i++)
 		  {
-			  System.out.print(sent[i]+"|"+tags[i] + " ");
+			  if( showPOSDetail )
+				  System.out.println(i+"]"+sent[i]+"|"+tags[i] + " ");
 			  
+			  // End of sentence
+			  if( sent[i].contains(".") )
+			  {
+				  subjectPos = -1;
+				  verbPos = -1;
+			  }
+
+			  // Find subject (nouns or pronouns)
+			  //	NN 		Noun, singular or mass
+			  // 	NNS 	Noun, plural
+			  // 	NNP 	Proper noun, singular
+			  // 	NNPS 	Proper noun, plural 
+			  if( tags[i].contains("NN") || tags[i].contains("PRP") )
+			  {
+				  subjectPos = i;
+				  subjectThirdPerson = -1;
+				  subjectSingular = -1;
+				  
+				  // Check for plural nouns (NNS) or plural proper nouns (NNPS)
+				  if( tags[i].equals("NNS") || tags[i].equals("NNPS") )
+				  {
+					  if( tags[i].equals("NNPS") )
+						  subjectSingular = 0;
+				  }
+				  // Check for singular nouns (NN) or singular proper nouns (NNP)
+				  else if( tags[i].equals("NN") || tags[i].equals("NNP") )
+				  {
+					  subjectSingular = 1;
+					  if( tags[i].equals("NNP") )
+						  subjectThirdPerson = 1;
+				  }
+				  
+			  }
+			  
+			  // Find verbs
+			  // 	VB 	Verb, base form
+			  // 	VBD 	Verb, past tense
+			  // 	VBG 	Verb, gerund or present participle
+			  // 	VBN 	Verb, past participle
+			  // 	VBP 	Verb, non-3rd person singular present
+			  // 	VBZ 	Verb, 3rd person singular present
+			  
+			  if( sent[i].contains("to") && sent[i+1].contains("be") && !(tags[i+2].equals("VBG") || tags[i+2].equals("VBN")) )
+			  {
+				  verbErrors++;
+			  }
+
+			  
+			  if( tags[i].contains("VB") )
+			  {
+				  verbThirdPerson = -1;
+				  verbSingular = -1;
+				  verbPos = i;
+				  
+				  // A subject will come before a phrase beginning with of
+				  if( sent[i].equals("of") && subjectPos == -1 )
+				  {
+					  verbErrors++;
+				  }
+				  
+				  if( tags[i].equals("VB") || tags[i].equals("VBD") )
+				  {
+
+				  }
+				  // Check for singular verbs
+				  else if( tags[i].equals("VBP") || tags[i].equals("VBZ") )
+				  {
+					  verbSingular = 1;
+					
+					if( tags[i].equals("VBZ") )
+					{
+						
+						verbThirdPerson = 1;
+					}
+					else
+						verbThirdPerson = 0;
+					}
+					// Check for plural verbs
+					else if( !tags[i].equals("VBN") )
+					{
+						verbSingular = 0;
+					}
+			  }
+			  			  
+			  if( subjectPos != -1 && verbPos != -1 && (verbPos - subjectPos) > 0 )
+			  {
+				  // Rule 0 - 3rd/non-3rd person mismatch
+				  if( subjectThirdPerson != -1 && verbThirdPerson != -1 && subjectThirdPerson != verbThirdPerson )
+				  {
+					  if( showPOSDetail )
+					  {
+						  System.out.println("Subject-Verb Violation: 3rd/non-3rd person mismatch");
+					  	System.out.println("Subject: "+sent[subjectPos]+"|"+tags[subjectPos] + " "+subjectPos);
+					  	System.out.println("Verb: "+sent[verbPos]+"|"+tags[verbPos] + " "+verbPos);
+					  }
+					  verbErrors++;
+				  }
+				  // Rule 1 - plural/singular subject-verb mismatch
+				  else if( subjectSingular != -1 && verbSingular != -1 && subjectSingular != verbSingular )
+				  {
+					  if( showPOSDetail )
+					  {
+						  System.out.println("Subject-Verb Violation: plural/singular mismatch");
+					  	System.out.println("Subject: "+sent[subjectPos]+"|"+tags[subjectPos] + " "+subjectPos);
+					  	System.out.println("Verb: "+sent[verbPos]+"|"+tags[verbPos] + " "+verbPos);
+					  }
+					  subjectVerbAgreementErrors++;
+				  }
+			  }
 		  }
-		  System.out.println();
+		  System.out.println("Subject-Verb Errors: "+subjectVerbAgreementErrors);
+		  System.out.println("Other Verb Errors: "+verbErrors);
+		  //System.out.println();
 		}
 		catch (IOException e) {
 		  // Model loading failed, handle the error
