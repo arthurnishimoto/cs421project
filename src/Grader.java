@@ -54,50 +54,61 @@ public class Grader {
 		{
 			boolean useTrainingSet = true;
 			boolean useTokenized = true;
+			boolean automatedFullTraining = true;
 			ScoreType scoreType = ScoreType.High;
 			int essayLimit = 100;
 			
-			// Setup data paths --------------------------------
-			String essayPath = "./input/";
-			if(useTrainingSet)
-				essayPath += "training/";
-			else
-				essayPath += "test/";
-			if(useTokenized)
-				essayPath += "tokenized/";
-			else
-				essayPath += "original/";
-			
-			if(useTrainingSet)
+			if( automatedFullTraining )
 			{
-				switch(scoreType)
+				for( int x = 0; x < 3; x++ )
 				{
-					case High:	essayPath += "high/";	break;
-					case Medium:essayPath += "medium/";	break;
-					case Low:	essayPath += "low/";	break;
-					default:	essayPath += "high/";	break;
+					// Setup data paths --------------------------------
+					String essayPath = "./input/";
+					if(useTrainingSet)
+						essayPath += "training/";
+					else
+						essayPath += "test/";
+					if(useTokenized)
+						essayPath += "tokenized/";
+					else
+						essayPath += "original/";
+					
+					if(useTrainingSet)
+					{
+						switch(x)
+						{
+							case 0:	essayPath += "high/";	break;
+							case 1:essayPath += "medium/";	break;
+							case 2:	essayPath += "low/";	break;
+							default:	essayPath += "high/";	break;
+						}
+					}
+					// Read the file
+					File dir = new File(essayPath);
+					File[] filesList = dir.listFiles();
+					
+					for( int i = 0; i < filesList.length; i++ )
+					{
+						inputFile = filesList[i].getPath();
+						System.out.println("Reading: "+inputFile);
+						
+						if(useTrainingSet)
+							out.print(inputFile+"\t");
+						else
+							out.print(filesList[i].getName()+"\t");
+						
+						gradeFile(inputFile,out);
+						if(i >= essayLimit - 1)
+							break;
+					}
+					
 				}
 			}
-			// Read the file
-			File dir = new File(essayPath);
-			File[] filesList = dir.listFiles();
 			
-			for( int i = 0; i < filesList.length; i++ )
-			{
-				inputFile = filesList[i].getPath();
-				System.out.println("Reading: "+inputFile);
-				
-				out.print(filesList[i].getName()+"\t");
-				
-				gradeFile(inputFile,out);
-				if(i >= essayLimit - 1)
-					break;
-			}
-			
-			System.out.println("Essays parsed: "+filesList.length);
-			System.out.println("totalSpellingErrors: "+totalSpellingErrors[0]+" "+totalSpellingErrors[1]/(float)filesList.length+" "+totalSpellingErrors[2]);
-			System.out.println("totalAgreementErrors: "+totalAgreementErrors[0]+" "+totalAgreementErrors[1]/(float)filesList.length+" "+totalAgreementErrors[2]);
-			System.out.println("totalVerbTenseErrors: "+totalVerbTenseErrors[0]+" "+totalVerbTenseErrors[1]/(float)filesList.length+" "+totalVerbTenseErrors[2]);
+			//System.out.println("Essays parsed: "+filesList.length);
+			//System.out.println("totalSpellingErrors: "+totalSpellingErrors[0]+" "+totalSpellingErrors[1]/(float)filesList.length+" "+totalSpellingErrors[2]);
+			//System.out.println("totalAgreementErrors: "+totalAgreementErrors[0]+" "+totalAgreementErrors[1]/(float)filesList.length+" "+totalAgreementErrors[2]);
+			//System.out.println("totalVerbTenseErrors: "+totalVerbTenseErrors[0]+" "+totalVerbTenseErrors[1]/(float)filesList.length+" "+totalVerbTenseErrors[2]);
 			// -------------------------------------------------
 		}
 		out.close();
