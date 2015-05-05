@@ -272,6 +272,18 @@ public class SpellCheck
 		text.add("a");
 		text.add("broken");
 		text.add("leg");
+		
+		
+		text.add("Because");
+		text.add("I");
+		text.add("think");
+		text.add("the");
+		text.add("science");
+		text.add("and");
+		text.add("technology");
+		text.add("are");
+		text.add("developing");
+		text.add(".");
 		*/
 		try {
 		  modelIn = new FileInputStream("./data/en-pos-maxent.bin");
@@ -303,7 +315,10 @@ public class SpellCheck
 		  // Used for distance
 		  int subjectPos = -1;
 		  int verbPos = -1;
-
+		  
+		  boolean inSentence = false;
+		  int mainVerb = 0;
+		  boolean hasSubordinatingConjunction = false;
 		  for(int i = 0; i < tags.length; i++)
 		  {
 			  if( showPOSDetail )
@@ -318,13 +333,59 @@ public class SpellCheck
 					  sentenceFormationErrors++;
 				  }
 			  }
-	
+			  
+			  // Beginning of essay OR sentence
+			  if( i == 0 || ((i-1 >= 0) && tag[i-1].contains("O") ) 
+					  && !tags[i-1].contains("CC")
+					  //&& !tags[i].contains("VBZ")
+					  )
+			  {
+				  inSentence = true;
+			  }
+			  
+			// Find main verb
+			  if( tags[i].contains("VB") ) // First tag in sentence is a verb
+			  {
+				  if( (i+1) < tags.length && tags[i+1].contains("VB") )
+				  {
+					  //System.out.println("auxVerb");
+				  }
+				  else if( (i+1) < tags.length && !tag[i+1].contains("O") )
+				  {
+					  mainVerb++;
+					  
+					  // Main verb cannot be start of a sentence
+					  if( i == 0 || ((i-1 >= 0) && tag[i-1].contains("O")) && tags[i-1].contains(".") )
+					  {
+						System.out.println("sentenceFormationError - Main verb starting sentence");
+						sentenceFormationErrors++;
+					  }
+					  
+				  }
+			  }
+			  
+			  if( tags[i].contains("IN") )// Preposition / Subordinating conjunctions
+			  {
+				  hasSubordinatingConjunction = true;
+			  }
 			  
 			  // End of sentence
 			  if( sent[i].contains(".") )
 			  {
+				  if( hasSubordinatingConjunction )
+				  {
+					  // Sentences with subordinating conjunction must have > 1 main verbs
+					  if( mainVerb <= 1)
+					  {
+						  //System.out.println("SubordinatingConjunction main verb count: " + mainVerb);
+						  sentenceFormationErrors++;
+					  }
+				  }
 				  subjectPos = -1;
 				  verbPos = -1;
+				  mainVerb = 0;
+				  inSentence = false;
+				  hasSubordinatingConjunction = false;
 			  }
 
 			  // Find subject (nouns or pronouns)

@@ -135,16 +135,16 @@ public class Map {
 	
 	//rates essay 1-5 based on sentence formation errors
 	private int score_1d (int sentenceFormationErrors) {
-		if (sentenceFormationErrors <= 10) {
+		if (sentenceFormationErrors <= 2) {
 			return 5;
 		}
-		else if (sentenceFormationErrors <= 15 && sentenceFormationErrors > 10) {
+		else if (sentenceFormationErrors <= 4 && sentenceFormationErrors > 2) {
 			return 4;
 		}
-		else if (sentenceFormationErrors <= 20 && sentenceFormationErrors > 15) {
+		else if (sentenceFormationErrors <= 8 && sentenceFormationErrors > 4) {
 			return 3;
 		}
-		else if (sentenceFormationErrors <= 30 && sentenceFormationErrors > 20) {
+		else if (sentenceFormationErrors <= 10 && sentenceFormationErrors > 8) {
 			return 2;
 		}
 		else {

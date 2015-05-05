@@ -35,7 +35,10 @@ public class Grader {
 	private static int[] totalSpellingErrors = {9999,0,0};
 	private static int[] totalAgreementErrors = {9999,0,0};
 	private static int[] totalVerbTenseErrors = {9999,0,0};
-
+	private static int[] totalSentenceFormationErrorsLow = {9999,0,0};
+	private static int[] totalSentenceFormationErrorsMed = {9999,0,0};
+	private static int[] totalSentenceFormationErrorsHigh = {9999,0,0};
+	
 	public static void main(String[] args) throws IOException {
 		String inputFile;
 		
@@ -114,17 +117,15 @@ public class Grader {
 			// -------------------------------------------------
 		}
 		
-		System.out.println("Sentence Formation Error Avg. (High Score): "+(sentenceFormationErrorsHigh/20.0));
-		System.out.println("Sentence Formation Error Avg. (Medium Score): "+(sentenceFormationErrorsMed/20.0));
-		System.out.println("Sentence Formation Error Avg. (Low Score): "+(sentenceFormationErrorsLow/20.0));
+		System.out.println("Sentence Formation Error (max|avg|min)");
+		System.out.println(" High Score: "+ totalSentenceFormationErrorsHigh[0] +"|"+ (totalSentenceFormationErrorsHigh[1]/20.0) +"|"+totalSentenceFormationErrorsHigh[2]);
+		System.out.println(" Medium Score: "+ totalSentenceFormationErrorsMed[0] +"|"+ (totalSentenceFormationErrorsMed[1]/20.0)+"|"+totalSentenceFormationErrorsMed[2]);
+		System.out.println(" Low Score: "+ totalSentenceFormationErrorsLow[0] +"|"+ (totalSentenceFormationErrorsLow[1]/20.0)+"|"+totalSentenceFormationErrorsLow[2]);
 		
 		System.out.println("Finished");
 		out.close();
 	}
-	
-	static int sentenceFormationErrorsLow = 0;
-	static int sentenceFormationErrorsMed = 0;
-	static int sentenceFormationErrorsHigh = 0;
+
 	static void gradeFile(String inputFile, PrintStream out) throws IOException
 	{
 		Parser parser = new Parser();
@@ -140,14 +141,7 @@ public class Grader {
 		
 		// Part 2
 		sentenceFormationErrors = spellChecker.getSentenceFormationErrors();
-		
-		if( currentScoreType == ScoreType.High )
-			sentenceFormationErrorsHigh += sentenceFormationErrors;
-		else if( currentScoreType == ScoreType.Medium )
-			sentenceFormationErrorsMed += sentenceFormationErrors;
-		else if( currentScoreType == ScoreType.Low )
-			sentenceFormationErrorsLow += sentenceFormationErrors;
-		
+
 		Map scores = new Map();
 		scores.mapScores(spellingErrors, agreementErrors, verbTenseErrors, sentenceFormationErrors,
 				wordCount, sentenceCount, out);
@@ -161,6 +155,34 @@ public class Grader {
 		totalSpellingErrors[1] += spellingErrors;
 		totalAgreementErrors[1] += agreementErrors;
 		totalVerbTenseErrors[1] += verbTenseErrors;
+		
+		if( currentScoreType == ScoreType.High )
+		{
+			totalSentenceFormationErrorsHigh[1] += sentenceFormationErrors;
+			
+			if( totalSentenceFormationErrorsHigh[0] > sentenceFormationErrors )
+				totalSentenceFormationErrorsHigh[0] = sentenceFormationErrors;
+			if( totalSentenceFormationErrorsHigh[2] < sentenceFormationErrors )
+				totalSentenceFormationErrorsHigh[2] = sentenceFormationErrors;
+		}
+		else if( currentScoreType == ScoreType.Medium )
+		{
+			totalSentenceFormationErrorsMed[1] += sentenceFormationErrors;
+			
+			if( totalSentenceFormationErrorsMed[0] > sentenceFormationErrors )
+				totalSentenceFormationErrorsMed[0] = sentenceFormationErrors;
+			if( totalSentenceFormationErrorsMed[2] < sentenceFormationErrors )
+				totalSentenceFormationErrorsMed[2] = sentenceFormationErrors;
+		}
+		else if( currentScoreType == ScoreType.Low )
+		{
+			totalSentenceFormationErrorsLow[1] += sentenceFormationErrors;
+			
+			if( totalSentenceFormationErrorsLow[0] > sentenceFormationErrors )
+				totalSentenceFormationErrorsLow[0] = sentenceFormationErrors;
+			if( totalSentenceFormationErrorsLow[2] < sentenceFormationErrors )
+				totalSentenceFormationErrorsLow[2] = sentenceFormationErrors;
+		}
 		
 		if( totalSpellingErrors[0] > spellingErrors )
 			totalSpellingErrors[0] = spellingErrors;
