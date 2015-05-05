@@ -27,11 +27,14 @@ public class Map {
 	private int _2b;
 	
 	public void mapScores(int spellingErrors, int agreementErrors,
-			int verbTenseErrors, int wordCount, int sentenceCount, PrintStream out) {
+			int verbTenseErrors, int sentenceFormationErrors, int wordCount, int sentenceCount, PrintStream out) {
 		_1a = score_1a(spellingErrors);
 		_1b = score_1b(agreementErrors);
 		_1c = score_1c(verbTenseErrors);
 		_3a = score_3a(wordCount, sentenceCount);
+		
+		_1d = score_1d(sentenceFormationErrors);
+		
 		finalScore = (_1a + _1b + _1c + _3a)/4;
 		finalRating = mapRating(finalScore);
 		
@@ -123,6 +126,25 @@ public class Map {
 			return 3;
 		}
 		else if (verbTenseErrors < 40 && verbTenseErrors > 30) {
+			return 2;
+		}
+		else {
+			return 1;
+		}
+	}
+	
+	//rates essay 1-5 based on sentence formation errors
+	private int score_1d (int sentenceFormationErrors) {
+		if (sentenceFormationErrors <= 10) {
+			return 5;
+		}
+		else if (sentenceFormationErrors <= 15 && sentenceFormationErrors > 10) {
+			return 4;
+		}
+		else if (sentenceFormationErrors <= 20 && sentenceFormationErrors > 15) {
+			return 3;
+		}
+		else if (sentenceFormationErrors <= 30 && sentenceFormationErrors > 20) {
 			return 2;
 		}
 		else {

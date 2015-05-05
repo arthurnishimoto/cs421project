@@ -1,2 +1,2 @@
-java -jar grader.jar
+java -classpath .;./grader.jar;./lib/jwnl-1.3.3.jar;./lib/lucene-analyzers-common-5.1.0.jar;./lib/lucene-core-5.1.0.jar;./lib/lucene-suggest-5.1.0.jar;./lib/opennlp-maxent-3.0.3.jar;./lib/opennlp-tools-1.5.3.jar;./lib/opennlp-uima-1.5.3.jar; Grader
 pause

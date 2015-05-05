@@ -20,12 +20,14 @@ public class Grader {
 	private static int spellingErrors;
 	private static int agreementErrors;
 	private static int verbTenseErrors;
+	private static int sentenceFormationErrors;
 	private static int wordCount;
 	private static int sentenceCount;
 	private static int finalScore;
 	private static String finalRating;
 	
 	enum ScoreType { Low, Medium, High };
+	static ScoreType currentScoreType = ScoreType.Low;
 	
 	static SpellCheck spellChecker;
 	
@@ -77,9 +79,9 @@ public class Grader {
 					{
 						switch(x)
 						{
-							case 0:	essayPath += "high/";	break;
-							case 1:essayPath += "medium/";	break;
-							case 2:	essayPath += "low/";	break;
+							case 0:	essayPath += "high/";	currentScoreType = ScoreType.High; break;
+							case 1:essayPath += "medium/";	currentScoreType = ScoreType.Medium; break;
+							case 2:	essayPath += "low/";	currentScoreType = ScoreType.Low; break;
 							default:	essayPath += "high/";	break;
 						}
 					}
@@ -111,9 +113,18 @@ public class Grader {
 			//System.out.println("totalVerbTenseErrors: "+totalVerbTenseErrors[0]+" "+totalVerbTenseErrors[1]/(float)filesList.length+" "+totalVerbTenseErrors[2]);
 			// -------------------------------------------------
 		}
+		
+		System.out.println("Sentence Formation Error Avg. (High Score): "+(sentenceFormationErrorsHigh/20.0));
+		System.out.println("Sentence Formation Error Avg. (Medium Score): "+(sentenceFormationErrorsMed/20.0));
+		System.out.println("Sentence Formation Error Avg. (Low Score): "+(sentenceFormationErrorsLow/20.0));
+		
+		System.out.println("Finished");
 		out.close();
 	}
 	
+	static int sentenceFormationErrorsLow = 0;
+	static int sentenceFormationErrorsMed = 0;
+	static int sentenceFormationErrorsHigh = 0;
 	static void gradeFile(String inputFile, PrintStream out) throws IOException
 	{
 		Parser parser = new Parser();
@@ -127,8 +138,18 @@ public class Grader {
 		wordCount = parser.getWordCount();
 		sentenceCount = parser.getSentenceCount();
 		
+		// Part 2
+		sentenceFormationErrors = spellChecker.getSentenceFormationErrors();
+		
+		if( currentScoreType == ScoreType.High )
+			sentenceFormationErrorsHigh += sentenceFormationErrors;
+		else if( currentScoreType == ScoreType.Medium )
+			sentenceFormationErrorsMed += sentenceFormationErrors;
+		else if( currentScoreType == ScoreType.Low )
+			sentenceFormationErrorsLow += sentenceFormationErrors;
+		
 		Map scores = new Map();
-		scores.mapScores(spellingErrors, agreementErrors, verbTenseErrors,
+		scores.mapScores(spellingErrors, agreementErrors, verbTenseErrors, sentenceFormationErrors,
 				wordCount, sentenceCount, out);
 		
 		finalScore = scores.getFinalScore();

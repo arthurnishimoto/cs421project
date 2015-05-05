@@ -54,8 +54,11 @@ public class SpellCheck
 	int subjectVerbAgreementErrors = 0;
 	int verbErrors = 0;
 	
+	// Part 2
+	int sentenceFormationErrors = 0;
+	
 	boolean showDetail = false;
-	boolean showPOSDetail = false;
+	boolean showPOSDetail = true;
 	
 	/*
 	public static void main(String[] args)
@@ -154,6 +157,11 @@ public class SpellCheck
 		return verbErrors;
 	}
 	
+	public int getSentenceFormationErrors()
+	{
+		return sentenceFormationErrors;
+	}
+	
 	private void parseLines(List<String> essayLines) throws IOException
 	{
 		spellingErrors = 0;
@@ -239,7 +247,32 @@ public class SpellCheck
 		InputStream modelIn = null;
 		subjectVerbAgreementErrors = 0;
 		verbErrors = 0;
+		sentenceFormationErrors = 0;
+		/*
+		text = new ArrayList<String>();
+		//My dog with a broken leg I not want
+		text.add("My");
+		text.add("dog");
+		text.add("with");
+		text.add("a");
+		text.add("broken");
+		text.add("leg");
+		text.add("I");
+		text.add("not");
+		text.add("want");
+		text.add(".");
 		
+		text.add("I");
+		text.add("do");
+		text.add("not");
+		text.add("want");
+		text.add("my");
+		text.add("dog");
+		text.add("with");
+		text.add("a");
+		text.add("broken");
+		text.add("leg");
+		*/
 		try {
 		  modelIn = new FileInputStream("./data/en-pos-maxent.bin");
 		  POSModel model = new POSModel(modelIn);
@@ -252,11 +285,11 @@ public class SpellCheck
 		  String sent[] = text.toArray(new String[text.size()]);
 		  String tags[] = tagger.tag( sent );
 		  
-		  //Sequence[] topSequences = chunker.topKSequences(sent, tags);
+		  Sequence[] topSequences = chunker.topKSequences(sent, tags);
 
-		  //String tag[] = chunker.chunk(sent, tags);
-		  //for( int i = 0; i < tag.length; i++ )
-		  //System.out.println(tag[i]);
+		  String tag[] = chunker.chunk(sent, tags);
+		  //for( int i = 0; i < topSequences.length; i++ )
+			//  System.out.println(topSequences[i]);
 		  
 		  //http://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
 		  
@@ -274,7 +307,18 @@ public class SpellCheck
 		  for(int i = 0; i < tags.length; i++)
 		  {
 			  if( showPOSDetail )
-				  System.out.println(i+"]"+sent[i]+"|"+tags[i] + " ");
+				  System.out.println(i+"]"+sent[i]+"|"+tags[i] + "|" + tag[i]);
+			   
+			  // Slightly useful (H: 0.25, M: 0.15, L: 0.35)
+			  if( tag[i].contains("SBAR") )
+			  {
+				  if( (i+1) < tag.length && tag[i+1].contains("O") )
+				  {
+					  System.out.println("sentenceFormationError");
+					  sentenceFormationErrors++;
+				  }
+			  }
+	
 			  
 			  // End of sentence
 			  if( sent[i].contains(".") )
@@ -367,7 +411,7 @@ public class SpellCheck
 				  {
 					  if( showPOSDetail )
 					  {
-						  System.out.println("Subject-Verb Violation: 3rd/non-3rd person mismatch");
+						System.out.println("Subject-Verb Violation: 3rd/non-3rd person mismatch");
 					  	System.out.println("Subject: "+sent[subjectPos]+"|"+tags[subjectPos] + " "+subjectPos);
 					  	System.out.println("Verb: "+sent[verbPos]+"|"+tags[verbPos] + " "+verbPos);
 					  }
@@ -378,7 +422,7 @@ public class SpellCheck
 				  {
 					  if( showPOSDetail )
 					  {
-						  System.out.println("Subject-Verb Violation: plural/singular mismatch");
+						System.out.println("Subject-Verb Violation: plural/singular mismatch");
 					  	System.out.println("Subject: "+sent[subjectPos]+"|"+tags[subjectPos] + " "+subjectPos);
 					  	System.out.println("Verb: "+sent[verbPos]+"|"+tags[verbPos] + " "+verbPos);
 					  }
@@ -388,6 +432,7 @@ public class SpellCheck
 		  }
 		  System.out.println("Subject-Verb Errors: "+subjectVerbAgreementErrors);
 		  System.out.println("Other Verb Errors: "+verbErrors);
+		  System.out.println("Sentence Formation Errors: "+sentenceFormationErrors);
 		  //System.out.println();
 		}
 		catch (IOException e) {
