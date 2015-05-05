@@ -34,10 +34,20 @@ public class Grader {
 	// [0] min, [1] count, [2] max
 	private static int[] totalSpellingErrors = {9999,0,0};
 	private static int[] totalAgreementErrors = {9999,0,0};
-	private static int[] totalVerbTenseErrors = {9999,0,0};
+	private static int[] totalVerbTenseErrorsLow = {9999,0,0};
+	private static int[] totalVerbTenseErrorsMed = {9999,0,0};
+	private static int[] totalVerbTenseErrorsHigh = {9999,0,0};
 	private static int[] totalSentenceFormationErrorsLow = {9999,0,0};
 	private static int[] totalSentenceFormationErrorsMed = {9999,0,0};
 	private static int[] totalSentenceFormationErrorsHigh = {9999,0,0};
+	
+	private static int[] wordCountLow = {9999,0,0};
+	private static int[] wordCountMed = {9999,0,0};
+	private static int[] wordCountHigh = {9999,0,0};
+	
+	private static int[] sentenceCountLow = {9999,0,0};
+	private static int[] sentenceCountMed = {9999,0,0};
+	private static int[] sentenceCountHigh = {9999,0,0};
 	
 	public static void main(String[] args) throws IOException {
 		String inputFile;
@@ -117,6 +127,22 @@ public class Grader {
 			// -------------------------------------------------
 		}
 		
+		System.out.println("Word Count (max|avg|min)");
+		System.out.println(" High Score: "+ wordCountHigh[0] +"|"+ (wordCountHigh[1]/20.0) +"|"+wordCountHigh[2]);
+		System.out.println(" Medium Score: "+ wordCountMed[0] +"|"+ (wordCountMed[1]/20.0)+"|"+wordCountMed[2]);
+		System.out.println(" Low Score: "+ wordCountLow[0] +"|"+ (wordCountLow[1]/20.0)+"|"+wordCountLow[2]);
+		
+		System.out.println("Sentence Count (max|avg|min)");
+		System.out.println(" High Score: "+ sentenceCountHigh[0] +"|"+ (sentenceCountHigh[1]/20.0) +"|"+sentenceCountHigh[2]);
+		System.out.println(" Medium Score: "+ sentenceCountMed[0] +"|"+ (sentenceCountMed[1]/20.0)+"|"+sentenceCountMed[2]);
+		System.out.println(" Low Score: "+ sentenceCountLow[0] +"|"+ (sentenceCountLow[1]/20.0)+"|"+sentenceCountLow[2]);
+		
+		System.out.println("Verb Tense Error (max|avg|min)");
+		System.out.println(" High Score: "+ totalVerbTenseErrorsHigh[0] +"|"+ (totalVerbTenseErrorsHigh[1]/20.0) +"|"+totalVerbTenseErrorsHigh[2]);
+		System.out.println(" Medium Score: "+ totalVerbTenseErrorsMed[0] +"|"+ (totalVerbTenseErrorsMed[1]/20.0)+"|"+totalVerbTenseErrorsMed[2]);
+		System.out.println(" Low Score: "+ totalVerbTenseErrorsLow[0] +"|"+ (totalVerbTenseErrorsLow[1]/20.0)+"|"+totalVerbTenseErrorsLow[2]);
+		
+		
 		System.out.println("Sentence Formation Error (max|avg|min)");
 		System.out.println(" High Score: "+ totalSentenceFormationErrorsHigh[0] +"|"+ (totalSentenceFormationErrorsHigh[1]/20.0) +"|"+totalSentenceFormationErrorsHigh[2]);
 		System.out.println(" Medium Score: "+ totalSentenceFormationErrorsMed[0] +"|"+ (totalSentenceFormationErrorsMed[1]/20.0)+"|"+totalSentenceFormationErrorsMed[2]);
@@ -154,34 +180,88 @@ public class Grader {
 		
 		totalSpellingErrors[1] += spellingErrors;
 		totalAgreementErrors[1] += agreementErrors;
-		totalVerbTenseErrors[1] += verbTenseErrors;
 		
 		if( currentScoreType == ScoreType.High )
 		{
+			sentenceCountHigh[1] += sentenceCount;
 			totalSentenceFormationErrorsHigh[1] += sentenceFormationErrors;
+			totalVerbTenseErrorsHigh[1] += verbTenseErrors;
+			
+			if( sentenceCountHigh[0] > sentenceCount )
+				sentenceCountHigh[0] = sentenceCount;
+			if( sentenceCountHigh[2] < sentenceCount )
+				sentenceCountHigh[2] = sentenceCount;
+			
+			wordCountHigh[1] += wordCount;
+			if( wordCountHigh[0] > wordCount )
+				wordCountHigh[0] = wordCount;
+			if( wordCountHigh[2] < wordCount )
+				wordCountHigh[2] = wordCount;
 			
 			if( totalSentenceFormationErrorsHigh[0] > sentenceFormationErrors )
 				totalSentenceFormationErrorsHigh[0] = sentenceFormationErrors;
 			if( totalSentenceFormationErrorsHigh[2] < sentenceFormationErrors )
 				totalSentenceFormationErrorsHigh[2] = sentenceFormationErrors;
+			
+			if( totalVerbTenseErrorsHigh[0] > verbTenseErrors )
+				totalVerbTenseErrorsHigh[0] = verbTenseErrors;
+			if( totalVerbTenseErrorsHigh[2] < verbTenseErrors )
+				totalVerbTenseErrorsHigh[2] = verbTenseErrors;
 		}
 		else if( currentScoreType == ScoreType.Medium )
 		{
+			
 			totalSentenceFormationErrorsMed[1] += sentenceFormationErrors;
+			totalVerbTenseErrorsMed[1] += verbTenseErrors;
+			
+			sentenceCountMed[1] += sentenceCount;
+			if( sentenceCountMed[0] > sentenceCount )
+				sentenceCountMed[0] = sentenceCount;
+			if( sentenceCountMed[2] < sentenceCount )
+				sentenceCountMed[2] = sentenceCount;
+			
+			wordCountMed[1] += wordCount;
+			if( wordCountMed[0] > wordCount )
+				wordCountMed[0] = wordCount;
+			if( wordCountMed[2] < wordCount )
+				wordCountMed[2] = wordCount;
 			
 			if( totalSentenceFormationErrorsMed[0] > sentenceFormationErrors )
 				totalSentenceFormationErrorsMed[0] = sentenceFormationErrors;
 			if( totalSentenceFormationErrorsMed[2] < sentenceFormationErrors )
 				totalSentenceFormationErrorsMed[2] = sentenceFormationErrors;
+			
+			if( totalVerbTenseErrorsMed[0] > verbTenseErrors )
+				totalVerbTenseErrorsMed[0] = verbTenseErrors;
+			if( totalVerbTenseErrorsMed[2] < verbTenseErrors )
+				totalVerbTenseErrorsMed[2] = verbTenseErrors;
 		}
 		else if( currentScoreType == ScoreType.Low )
 		{
 			totalSentenceFormationErrorsLow[1] += sentenceFormationErrors;
+			totalVerbTenseErrorsLow[1] += verbTenseErrors;
+			
+			sentenceCountLow[1] += sentenceCount;
+			if( sentenceCountLow[0] > sentenceCount )
+				sentenceCountLow[0] = sentenceCount;
+			if( sentenceCountLow[2] < sentenceCount )
+				sentenceCountLow[2] = sentenceCount;
+			
+			wordCountLow[1] += wordCount;
+			if( wordCountLow[0] > wordCount )
+				wordCountLow[0] = wordCount;
+			if( wordCountLow[2] < wordCount )
+				wordCountLow[2] = wordCount;
 			
 			if( totalSentenceFormationErrorsLow[0] > sentenceFormationErrors )
 				totalSentenceFormationErrorsLow[0] = sentenceFormationErrors;
 			if( totalSentenceFormationErrorsLow[2] < sentenceFormationErrors )
 				totalSentenceFormationErrorsLow[2] = sentenceFormationErrors;
+			
+			if( totalVerbTenseErrorsLow[0] > verbTenseErrors )
+				totalVerbTenseErrorsLow[0] = verbTenseErrors;
+			if( totalVerbTenseErrorsLow[2] < verbTenseErrors )
+				totalVerbTenseErrorsLow[2] = verbTenseErrors;
 		}
 		
 		if( totalSpellingErrors[0] > spellingErrors )
@@ -192,9 +272,5 @@ public class Grader {
 			totalAgreementErrors[0] = agreementErrors;
 		if( totalAgreementErrors[2] < agreementErrors )
 			totalAgreementErrors[2] = agreementErrors;
-		if( totalVerbTenseErrors[0] > verbTenseErrors )
-			totalVerbTenseErrors[0] = verbTenseErrors;
-		if( totalVerbTenseErrors[2] < verbTenseErrors )
-			totalVerbTenseErrors[2] = verbTenseErrors;
 	}
 }

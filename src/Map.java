@@ -35,7 +35,7 @@ public class Map {
 		
 		_1d = score_1d(sentenceFormationErrors);
 		
-		finalScore = (_1a + _1b + _1c + 2 * _1d + 1 * _3a)/6;
+		finalScore = (_1a + _1b + _1c + 2 * _1d + 2 * _3a)/7;
 		finalRating = mapRating(finalScore);
 		
 		out.print(_1a+"\t");
@@ -154,23 +154,41 @@ public class Map {
 	
 	//rates 1-5 based on amount of words and amount of sentences
 	private int score_3a (int wordCount, int sentenceCount) {
-		if (wordCount > 370 && sentenceCount > 20) {
-			return 5;
+		float wordScore = 0;
+		float sentenceScore = 0;
+		
+		if (wordCount >= 400) {
+			wordScore = 5/2.0f;
 		}
-		else if (wordCount < 370 && wordCount > 310 
-				&& sentenceCount < 20 && sentenceCount > 17) {
-			return 4;
+		else if (wordCount < 400 && wordCount >= 360) {
+			wordScore = 4/2.0f;
 		}
-		else if (wordCount < 310 && wordCount > 250 
-				&& sentenceCount < 17 && sentenceCount > 14) {
-			return 3;
+		else if (wordCount < 360 && wordCount >= 340) {
+			wordScore = 3/2.0f;
 		}
-		else if (wordCount < 250 && wordCount > 190 
-				&& sentenceCount < 14 && sentenceCount > 11) {
-			return 2;
+		else if (wordCount < 250 && wordCount >= 190) {
+			wordScore = 2/2.0f;
 		}
 		else {
-			return 1;
+			wordScore = 1/2.0f;
 		}
+		
+		if (sentenceCount >= 17) {
+			sentenceScore = 5/2.0f;
+		}
+		else if (sentenceCount < 17 && sentenceCount >= 15) {
+			sentenceScore = 4/2.0f;
+		}
+		else if (sentenceCount < 15 && sentenceCount >= 14) {
+			sentenceScore = 3/2.0f;
+		}
+		else if (sentenceCount < 14 && sentenceCount >= 13) {
+			sentenceScore = 2/2.0f;
+		}
+		else {
+			sentenceScore = 1/2.0f;
+		}
+		
+		return (int) (wordScore+sentenceScore);
 	}
 }

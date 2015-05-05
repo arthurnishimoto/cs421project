@@ -284,6 +284,12 @@ public class SpellCheck
 		text.add("are");
 		text.add("developing");
 		text.add(".");
+		
+		text.add("Will");
+		text.add("be");
+		text.add("not");
+		text.add("agree");
+		text.add(".");
 		*/
 		try {
 		  modelIn = new FileInputStream("./data/en-pos-maxent.bin");
@@ -318,6 +324,7 @@ public class SpellCheck
 		  
 		  boolean inSentence = false;
 		  int mainVerb = 0;
+		  int auxVerb = 0;
 		  boolean hasSubordinatingConjunction = false;
 		  for(int i = 0; i < tags.length; i++)
 		  {
@@ -344,11 +351,12 @@ public class SpellCheck
 			  }
 			  
 			// Find main verb
-			  if( tags[i].contains("VB") ) // First tag in sentence is a verb
+			  if( tags[i].contains("VB") )
 			  {
 				  if( (i+1) < tags.length && tags[i+1].contains("VB") )
 				  {
-					  //System.out.println("auxVerb");
+					  System.out.println("auxVerb");
+					  auxVerb++;
 				  }
 				  else if( (i+1) < tags.length && !tag[i+1].contains("O") )
 				  {
@@ -360,7 +368,6 @@ public class SpellCheck
 						System.out.println("sentenceFormationError - Main verb starting sentence");
 						sentenceFormationErrors++;
 					  }
-					  
 				  }
 			  }
 			  
@@ -381,9 +388,15 @@ public class SpellCheck
 						  sentenceFormationErrors++;
 					  }
 				  }
+				  
+				 // System.out.println("Aux verb count: "+auxVerb);
+				  //if( auxVerb == 0 )
+					//  verbErrors++;
+				  
 				  subjectPos = -1;
 				  verbPos = -1;
 				  mainVerb = 0;
+				  auxVerb = 0;
 				  inSentence = false;
 				  hasSubordinatingConjunction = false;
 			  }
@@ -427,7 +440,12 @@ public class SpellCheck
 			  {
 				  verbErrors++;
 			  }
-
+			  
+			  if( sent[i].contains("be") && tags[i+1].equals("RB") )
+			  {
+				  System.out.println("be followed by RB error");
+				  verbErrors++;
+			  }
 			  
 			  if( tags[i].contains("VB") )
 			  {
