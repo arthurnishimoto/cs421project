@@ -35,7 +35,7 @@ public class Map {
 		
 		_1d = score_1d(sentenceFormationErrors);
 		
-		finalScore = (_1a + _1b + _1c + _3a)/4;
+		finalScore = (_1a + _1b + _1c + 2 * _1d + 1 * _3a)/6;
 		finalRating = mapRating(finalScore);
 		
 		out.print(_1a+"\t");
@@ -135,16 +135,16 @@ public class Map {
 	
 	//rates essay 1-5 based on sentence formation errors
 	private int score_1d (int sentenceFormationErrors) {
-		if (sentenceFormationErrors <= 2) {
+		if (sentenceFormationErrors <= 0) {
 			return 5;
 		}
-		else if (sentenceFormationErrors <= 4 && sentenceFormationErrors > 2) {
+		else if (sentenceFormationErrors <= 2 && sentenceFormationErrors > 0) {
 			return 4;
 		}
-		else if (sentenceFormationErrors <= 8 && sentenceFormationErrors > 4) {
+		else if (sentenceFormationErrors <= 4 && sentenceFormationErrors > 2) {
 			return 3;
 		}
-		else if (sentenceFormationErrors <= 10 && sentenceFormationErrors > 8) {
+		else if (sentenceFormationErrors <= 8 && sentenceFormationErrors > 4) {
 			return 2;
 		}
 		else {

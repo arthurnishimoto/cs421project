@@ -355,7 +355,7 @@ public class SpellCheck
 					  mainVerb++;
 					  
 					  // Main verb cannot be start of a sentence
-					  if( i == 0 || ((i-1 >= 0) && tag[i-1].contains("O")) && tags[i-1].contains(".") )
+					  if( i == 0 || ((i-1 >= 0) && tag[i-1].contains("O")) && tags[i-1].contains(".") && !tag[i].contains("O") )
 					  {
 						System.out.println("sentenceFormationError - Main verb starting sentence");
 						sentenceFormationErrors++;
