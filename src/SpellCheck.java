@@ -326,15 +326,20 @@ public class SpellCheck
 		  int mainVerb = 0;
 		  int auxVerb = 0;
 		  boolean hasSubordinatingConjunction = false;
+		  boolean hasGerund = false;
+		  boolean hasBecauseClause = false;
 		  for(int i = 0; i < tags.length; i++)
 		  {
 			  if( showPOSDetail )
 				  System.out.println(i+"]"+sent[i]+"|"+tags[i] + "|" + tag[i]);
-			   
+			  
+			  if( sent[i].contains("because") )
+				  hasBecauseClause = true;
+			  
 			  // Slightly useful (H: 0.25, M: 0.15, L: 0.35)
 			  if( tag[i].contains("SBAR") )
 			  {
-				  if( (i+1) < tag.length && tag[i+1].contains("O") )
+				  if( (i+1) < tag.length && tag[i+1].contains("O") && !hasBecauseClause )
 				  {
 					  System.out.println("sentenceFormationError");
 					  sentenceFormationErrors++;
@@ -360,6 +365,7 @@ public class SpellCheck
 				  }
 				  else if( (i+1) < tags.length && !tag[i+1].contains("O") )
 				  {
+					  System.out.println("mainVerb");
 					  mainVerb++;
 					  
 					  // Main verb cannot be start of a sentence
@@ -381,10 +387,13 @@ public class SpellCheck
 			  {
 				  if( hasSubordinatingConjunction )
 				  {
-					  // Sentences with subordinating conjunction must have > 1 main verbs
-					  if( mainVerb <= 1)
+					  if( hasGerund )
+						  mainVerb++;
+					  
+					  // Sentences with subordinating conjunction must have > 1 main verbs or a gerund
+					  if( mainVerb < 2 )
 					  {
-						  //System.out.println("SubordinatingConjunction main verb count: " + mainVerb);
+						  System.out.println("sentenceFormationError main verb count < 2: " + mainVerb);
 						  sentenceFormationErrors++;
 					  }
 				  }
@@ -399,6 +408,8 @@ public class SpellCheck
 				  auxVerb = 0;
 				  inSentence = false;
 				  hasSubordinatingConjunction = false;
+				  hasGerund = false;
+				  hasBecauseClause = false;
 			  }
 
 			  // Find subject (nouns or pronouns)
@@ -435,6 +446,10 @@ public class SpellCheck
 			  // 	VBN 	Verb, past participle
 			  // 	VBP 	Verb, non-3rd person singular present
 			  // 	VBZ 	Verb, 3rd person singular present
+			  if( tags[i].equals("VBG") )
+			  {
+				  hasGerund = true;
+			  }
 			  
 			  if( sent[i].contains("to") && sent[i+1].contains("be") && !(tags[i+2].equals("VBG") || tags[i+2].equals("VBN")) )
 			  {

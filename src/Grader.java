@@ -127,26 +127,27 @@ public class Grader {
 			// -------------------------------------------------
 		}
 		
-		System.out.println("Word Count (max|avg|min)");
-		System.out.println(" High Score: "+ wordCountHigh[0] +"|"+ (wordCountHigh[1]/20.0) +"|"+wordCountHigh[2]);
-		System.out.println(" Medium Score: "+ wordCountMed[0] +"|"+ (wordCountMed[1]/20.0)+"|"+wordCountMed[2]);
-		System.out.println(" Low Score: "+ wordCountLow[0] +"|"+ (wordCountLow[1]/20.0)+"|"+wordCountLow[2]);
+		float essayCount = 30.0f;
+		System.out.println("Word Count (min|avg|max)");
+		System.out.println(" High Score: "+ wordCountHigh[0] +"|"+ (wordCountHigh[1]/essayCount) +"|"+wordCountHigh[2]);
+		System.out.println(" Medium Score: "+ wordCountMed[0] +"|"+ (wordCountMed[1]/essayCount)+"|"+wordCountMed[2]);
+		System.out.println(" Low Score: "+ wordCountLow[0] +"|"+ (wordCountLow[1]/essayCount)+"|"+wordCountLow[2]);
 		
-		System.out.println("Sentence Count (max|avg|min)");
-		System.out.println(" High Score: "+ sentenceCountHigh[0] +"|"+ (sentenceCountHigh[1]/20.0) +"|"+sentenceCountHigh[2]);
-		System.out.println(" Medium Score: "+ sentenceCountMed[0] +"|"+ (sentenceCountMed[1]/20.0)+"|"+sentenceCountMed[2]);
-		System.out.println(" Low Score: "+ sentenceCountLow[0] +"|"+ (sentenceCountLow[1]/20.0)+"|"+sentenceCountLow[2]);
+		System.out.println("Sentence Count (min|avg|max)");
+		System.out.println(" High Score: "+ sentenceCountHigh[0] +"|"+ (sentenceCountHigh[1]/essayCount) +"|"+sentenceCountHigh[2]);
+		System.out.println(" Medium Score: "+ sentenceCountMed[0] +"|"+ (sentenceCountMed[1]/essayCount)+"|"+sentenceCountMed[2]);
+		System.out.println(" Low Score: "+ sentenceCountLow[0] +"|"+ (sentenceCountLow[1]/essayCount)+"|"+sentenceCountLow[2]);
 		
-		System.out.println("Verb Tense Error (max|avg|min)");
-		System.out.println(" High Score: "+ totalVerbTenseErrorsHigh[0] +"|"+ (totalVerbTenseErrorsHigh[1]/20.0) +"|"+totalVerbTenseErrorsHigh[2]);
-		System.out.println(" Medium Score: "+ totalVerbTenseErrorsMed[0] +"|"+ (totalVerbTenseErrorsMed[1]/20.0)+"|"+totalVerbTenseErrorsMed[2]);
-		System.out.println(" Low Score: "+ totalVerbTenseErrorsLow[0] +"|"+ (totalVerbTenseErrorsLow[1]/20.0)+"|"+totalVerbTenseErrorsLow[2]);
+		System.out.println("Verb Tense Error (min|avg|max)");
+		System.out.println(" High Score: "+ totalVerbTenseErrorsHigh[0] +"|"+ (totalVerbTenseErrorsHigh[1]/essayCount) +"|"+totalVerbTenseErrorsHigh[2]);
+		System.out.println(" Medium Score: "+ totalVerbTenseErrorsMed[0] +"|"+ (totalVerbTenseErrorsMed[1]/essayCount)+"|"+totalVerbTenseErrorsMed[2]);
+		System.out.println(" Low Score: "+ totalVerbTenseErrorsLow[0] +"|"+ (totalVerbTenseErrorsLow[1]/essayCount)+"|"+totalVerbTenseErrorsLow[2]);
 		
 		
-		System.out.println("Sentence Formation Error (max|avg|min)");
-		System.out.println(" High Score: "+ totalSentenceFormationErrorsHigh[0] +"|"+ (totalSentenceFormationErrorsHigh[1]/20.0) +"|"+totalSentenceFormationErrorsHigh[2]);
-		System.out.println(" Medium Score: "+ totalSentenceFormationErrorsMed[0] +"|"+ (totalSentenceFormationErrorsMed[1]/20.0)+"|"+totalSentenceFormationErrorsMed[2]);
-		System.out.println(" Low Score: "+ totalSentenceFormationErrorsLow[0] +"|"+ (totalSentenceFormationErrorsLow[1]/20.0)+"|"+totalSentenceFormationErrorsLow[2]);
+		System.out.println("Sentence Formation Error (min|avg|max)");
+		System.out.println(" High Score: "+ totalSentenceFormationErrorsHigh[0] +"|"+ (totalSentenceFormationErrorsHigh[1]/essayCount) +"|"+totalSentenceFormationErrorsHigh[2]);
+		System.out.println(" Medium Score: "+ totalSentenceFormationErrorsMed[0] +"|"+ (totalSentenceFormationErrorsMed[1]/essayCount)+"|"+totalSentenceFormationErrorsMed[2]);
+		System.out.println(" Low Score: "+ totalSentenceFormationErrorsLow[0] +"|"+ (totalSentenceFormationErrorsLow[1]/essayCount)+"|"+totalSentenceFormationErrorsLow[2]);
 		
 		System.out.println("Finished");
 		out.close();

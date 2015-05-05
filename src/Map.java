@@ -116,16 +116,16 @@ public class Map {
 	
 	//rates scores 1-5 based on verb tense errors
 	private int score_1c (int verbTenseErrors) {
-		if (verbTenseErrors < 10) {
+		if (verbTenseErrors <= 10) {
 			return 5;
 		}
-		else if (verbTenseErrors < 20 && verbTenseErrors > 10) {
+		else if (verbTenseErrors <= 20 && verbTenseErrors > 10) {
 			return 4;
 		}
-		else if (verbTenseErrors < 30 && verbTenseErrors > 20) {
+		else if (verbTenseErrors <= 30 && verbTenseErrors > 20) {
 			return 3;
 		}
-		else if (verbTenseErrors < 40 && verbTenseErrors > 30) {
+		else if (verbTenseErrors <= 40 && verbTenseErrors > 30) {
 			return 2;
 		}
 		else {
