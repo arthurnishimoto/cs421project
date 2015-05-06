@@ -32,8 +32,12 @@ public class Grader {
 	static SpellCheck spellChecker;
 	
 	// [0] min, [1] count, [2] max
-	private static int[] totalSpellingErrors = {9999,0,0};
-	private static int[] totalAgreementErrors = {9999,0,0};
+	private static int[] totalSpellingErrorsLow = {9999,0,0};
+	private static int[] totalSpellingErrorsMed = {9999,0,0};
+	private static int[] totalSpellingErrorsHigh = {9999,0,0};
+	private static int[] totalAgreementErrorsLow = {9999,0,0};
+	private static int[] totalAgreementErrorsMed = {9999,0,0};
+	private static int[] totalAgreementErrorsHigh = {9999,0,0};
 	private static int[] totalVerbTenseErrorsLow = {9999,0,0};
 	private static int[] totalVerbTenseErrorsMed = {9999,0,0};
 	private static int[] totalVerbTenseErrorsHigh = {9999,0,0};
@@ -128,6 +132,28 @@ public class Grader {
 		}
 		
 		float essayCount = 30.0f;
+		System.out.println("Spelling Error (min|avg|max)");
+		System.out.println(" High Score: "+ totalSpellingErrorsHigh[0] +"|"+ (totalSpellingErrorsHigh[1]/essayCount) +"|"+totalSpellingErrorsHigh[2]);
+		System.out.println(" Medium Score: "+ totalSpellingErrorsMed[0] +"|"+ (totalSpellingErrorsMed[1]/essayCount)+"|"+totalSpellingErrorsMed[2]);
+		System.out.println(" Low Score: "+ totalSpellingErrorsLow[0] +"|"+ (totalSpellingErrorsLow[1]/essayCount)+"|"+totalSpellingErrorsLow[2]);
+		
+		
+		System.out.println("Subject-Verb Agreement Error (min|avg|max)");
+		System.out.println(" High Score: "+ totalAgreementErrorsHigh[0] +"|"+ (totalAgreementErrorsHigh[1]/essayCount) +"|"+totalAgreementErrorsHigh[2]);
+		System.out.println(" Medium Score: "+ totalAgreementErrorsMed[0] +"|"+ (totalAgreementErrorsMed[1]/essayCount)+"|"+totalAgreementErrorsMed[2]);
+		System.out.println(" Low Score: "+ totalAgreementErrorsLow[0] +"|"+ (totalAgreementErrorsLow[1]/essayCount)+"|"+totalAgreementErrorsLow[2]);
+		
+		
+		System.out.println("Verb Tense Error (min|avg|max)");
+		System.out.println(" High Score: "+ totalVerbTenseErrorsHigh[0] +"|"+ (totalVerbTenseErrorsHigh[1]/essayCount) +"|"+totalVerbTenseErrorsHigh[2]);
+		System.out.println(" Medium Score: "+ totalVerbTenseErrorsMed[0] +"|"+ (totalVerbTenseErrorsMed[1]/essayCount)+"|"+totalVerbTenseErrorsMed[2]);
+		System.out.println(" Low Score: "+ totalVerbTenseErrorsLow[0] +"|"+ (totalVerbTenseErrorsLow[1]/essayCount)+"|"+totalVerbTenseErrorsLow[2]);
+		
+		System.out.println("Sentence Formation Error (min|avg|max)");
+		System.out.println(" High Score: "+ totalSentenceFormationErrorsHigh[0] +"|"+ (totalSentenceFormationErrorsHigh[1]/essayCount) +"|"+totalSentenceFormationErrorsHigh[2]);
+		System.out.println(" Medium Score: "+ totalSentenceFormationErrorsMed[0] +"|"+ (totalSentenceFormationErrorsMed[1]/essayCount)+"|"+totalSentenceFormationErrorsMed[2]);
+		System.out.println(" Low Score: "+ totalSentenceFormationErrorsLow[0] +"|"+ (totalSentenceFormationErrorsLow[1]/essayCount)+"|"+totalSentenceFormationErrorsLow[2]);
+		
 		System.out.println("Word Count (min|avg|max)");
 		System.out.println(" High Score: "+ wordCountHigh[0] +"|"+ (wordCountHigh[1]/essayCount) +"|"+wordCountHigh[2]);
 		System.out.println(" Medium Score: "+ wordCountMed[0] +"|"+ (wordCountMed[1]/essayCount)+"|"+wordCountMed[2]);
@@ -137,17 +163,6 @@ public class Grader {
 		System.out.println(" High Score: "+ sentenceCountHigh[0] +"|"+ (sentenceCountHigh[1]/essayCount) +"|"+sentenceCountHigh[2]);
 		System.out.println(" Medium Score: "+ sentenceCountMed[0] +"|"+ (sentenceCountMed[1]/essayCount)+"|"+sentenceCountMed[2]);
 		System.out.println(" Low Score: "+ sentenceCountLow[0] +"|"+ (sentenceCountLow[1]/essayCount)+"|"+sentenceCountLow[2]);
-		
-		System.out.println("Verb Tense Error (min|avg|max)");
-		System.out.println(" High Score: "+ totalVerbTenseErrorsHigh[0] +"|"+ (totalVerbTenseErrorsHigh[1]/essayCount) +"|"+totalVerbTenseErrorsHigh[2]);
-		System.out.println(" Medium Score: "+ totalVerbTenseErrorsMed[0] +"|"+ (totalVerbTenseErrorsMed[1]/essayCount)+"|"+totalVerbTenseErrorsMed[2]);
-		System.out.println(" Low Score: "+ totalVerbTenseErrorsLow[0] +"|"+ (totalVerbTenseErrorsLow[1]/essayCount)+"|"+totalVerbTenseErrorsLow[2]);
-		
-		
-		System.out.println("Sentence Formation Error (min|avg|max)");
-		System.out.println(" High Score: "+ totalSentenceFormationErrorsHigh[0] +"|"+ (totalSentenceFormationErrorsHigh[1]/essayCount) +"|"+totalSentenceFormationErrorsHigh[2]);
-		System.out.println(" Medium Score: "+ totalSentenceFormationErrorsMed[0] +"|"+ (totalSentenceFormationErrorsMed[1]/essayCount)+"|"+totalSentenceFormationErrorsMed[2]);
-		System.out.println(" Low Score: "+ totalSentenceFormationErrorsLow[0] +"|"+ (totalSentenceFormationErrorsLow[1]/essayCount)+"|"+totalSentenceFormationErrorsLow[2]);
 		
 		System.out.println("Finished");
 		out.close();
@@ -179,99 +194,43 @@ public class Grader {
 		finalRating = scores.getFinalRating();
 		System.out.println("Rating: " + finalRating);
 		
-		totalSpellingErrors[1] += spellingErrors;
-		totalAgreementErrors[1] += agreementErrors;
-		
 		if( currentScoreType == ScoreType.High )
 		{
-			sentenceCountHigh[1] += sentenceCount;
-			totalSentenceFormationErrorsHigh[1] += sentenceFormationErrors;
-			totalVerbTenseErrorsHigh[1] += verbTenseErrors;
-			
-			if( sentenceCountHigh[0] > sentenceCount )
-				sentenceCountHigh[0] = sentenceCount;
-			if( sentenceCountHigh[2] < sentenceCount )
-				sentenceCountHigh[2] = sentenceCount;
-			
-			wordCountHigh[1] += wordCount;
-			if( wordCountHigh[0] > wordCount )
-				wordCountHigh[0] = wordCount;
-			if( wordCountHigh[2] < wordCount )
-				wordCountHigh[2] = wordCount;
-			
-			if( totalSentenceFormationErrorsHigh[0] > sentenceFormationErrors )
-				totalSentenceFormationErrorsHigh[0] = sentenceFormationErrors;
-			if( totalSentenceFormationErrorsHigh[2] < sentenceFormationErrors )
-				totalSentenceFormationErrorsHigh[2] = sentenceFormationErrors;
-			
-			if( totalVerbTenseErrorsHigh[0] > verbTenseErrors )
-				totalVerbTenseErrorsHigh[0] = verbTenseErrors;
-			if( totalVerbTenseErrorsHigh[2] < verbTenseErrors )
-				totalVerbTenseErrorsHigh[2] = verbTenseErrors;
+			CalculateErrorStats(totalSpellingErrorsHigh, spellingErrors);
+			CalculateErrorStats(totalAgreementErrorsHigh, agreementErrors);
+			CalculateErrorStats(totalVerbTenseErrorsHigh, verbTenseErrors);
+			CalculateErrorStats(totalSentenceFormationErrorsHigh, sentenceFormationErrors);
+			CalculateErrorStats(sentenceCountHigh, sentenceCount);
+			CalculateErrorStats(wordCountHigh, wordCount);
 		}
 		else if( currentScoreType == ScoreType.Medium )
 		{
 			
-			totalSentenceFormationErrorsMed[1] += sentenceFormationErrors;
-			totalVerbTenseErrorsMed[1] += verbTenseErrors;
-			
-			sentenceCountMed[1] += sentenceCount;
-			if( sentenceCountMed[0] > sentenceCount )
-				sentenceCountMed[0] = sentenceCount;
-			if( sentenceCountMed[2] < sentenceCount )
-				sentenceCountMed[2] = sentenceCount;
-			
-			wordCountMed[1] += wordCount;
-			if( wordCountMed[0] > wordCount )
-				wordCountMed[0] = wordCount;
-			if( wordCountMed[2] < wordCount )
-				wordCountMed[2] = wordCount;
-			
-			if( totalSentenceFormationErrorsMed[0] > sentenceFormationErrors )
-				totalSentenceFormationErrorsMed[0] = sentenceFormationErrors;
-			if( totalSentenceFormationErrorsMed[2] < sentenceFormationErrors )
-				totalSentenceFormationErrorsMed[2] = sentenceFormationErrors;
-			
-			if( totalVerbTenseErrorsMed[0] > verbTenseErrors )
-				totalVerbTenseErrorsMed[0] = verbTenseErrors;
-			if( totalVerbTenseErrorsMed[2] < verbTenseErrors )
-				totalVerbTenseErrorsMed[2] = verbTenseErrors;
+			CalculateErrorStats(totalSpellingErrorsMed, spellingErrors);
+			CalculateErrorStats(totalAgreementErrorsMed, agreementErrors);
+			CalculateErrorStats(totalVerbTenseErrorsMed, verbTenseErrors);
+			CalculateErrorStats(totalSentenceFormationErrorsMed, sentenceFormationErrors);
+			CalculateErrorStats(sentenceCountMed, sentenceCount);
+			CalculateErrorStats(wordCountMed, wordCount);
 		}
 		else if( currentScoreType == ScoreType.Low )
 		{
-			totalSentenceFormationErrorsLow[1] += sentenceFormationErrors;
-			totalVerbTenseErrorsLow[1] += verbTenseErrors;
-			
-			sentenceCountLow[1] += sentenceCount;
-			if( sentenceCountLow[0] > sentenceCount )
-				sentenceCountLow[0] = sentenceCount;
-			if( sentenceCountLow[2] < sentenceCount )
-				sentenceCountLow[2] = sentenceCount;
-			
-			wordCountLow[1] += wordCount;
-			if( wordCountLow[0] > wordCount )
-				wordCountLow[0] = wordCount;
-			if( wordCountLow[2] < wordCount )
-				wordCountLow[2] = wordCount;
-			
-			if( totalSentenceFormationErrorsLow[0] > sentenceFormationErrors )
-				totalSentenceFormationErrorsLow[0] = sentenceFormationErrors;
-			if( totalSentenceFormationErrorsLow[2] < sentenceFormationErrors )
-				totalSentenceFormationErrorsLow[2] = sentenceFormationErrors;
-			
-			if( totalVerbTenseErrorsLow[0] > verbTenseErrors )
-				totalVerbTenseErrorsLow[0] = verbTenseErrors;
-			if( totalVerbTenseErrorsLow[2] < verbTenseErrors )
-				totalVerbTenseErrorsLow[2] = verbTenseErrors;
+			CalculateErrorStats(totalSpellingErrorsLow, spellingErrors);
+			CalculateErrorStats(totalAgreementErrorsLow, agreementErrors);
+			CalculateErrorStats(totalVerbTenseErrorsLow, verbTenseErrors);
+			CalculateErrorStats(totalSentenceFormationErrorsLow, sentenceFormationErrors);
+			CalculateErrorStats(sentenceCountLow, sentenceCount);
+			CalculateErrorStats(wordCountLow, wordCount);
 		}
-		
-		if( totalSpellingErrors[0] > spellingErrors )
-			totalSpellingErrors[0] = spellingErrors;
-		if( totalSpellingErrors[2] < spellingErrors )
-			totalSpellingErrors[2] = spellingErrors;
-		if( totalAgreementErrors[0] > agreementErrors )
-			totalAgreementErrors[0] = agreementErrors;
-		if( totalAgreementErrors[2] < agreementErrors )
-			totalAgreementErrors[2] = agreementErrors;
 	}
+	
+	 static void CalculateErrorStats( int[] dataArray, int errorCount )
+	 {
+		 dataArray[1] += errorCount;
+		 
+		if( dataArray[0] > errorCount )
+			dataArray[0] = errorCount;
+		if( dataArray[2] < errorCount )
+			dataArray[2] = errorCount;	 
+	 }
 }

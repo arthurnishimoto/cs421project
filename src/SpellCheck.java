@@ -58,7 +58,7 @@ public class SpellCheck
 	int sentenceFormationErrors = 0;
 	
 	boolean showDetail = false;
-	boolean showPOSDetail = true;
+	boolean showPOSDetail = false;
 	
 	/*
 	public static void main(String[] args)
@@ -209,8 +209,8 @@ public class SpellCheck
         		}
 	        }
         }
-        
-        System.out.println("Spelling errors: "+spellingErrors);
+        if(showDetail)
+        	System.out.println("Spelling errors: "+spellingErrors);
 	}
 	
 	public SpellCheck(String dictionaryPath)
@@ -341,7 +341,8 @@ public class SpellCheck
 			  {
 				  if( (i+1) < tag.length && tag[i+1].contains("O") && !hasBecauseClause )
 				  {
-					  System.out.println("sentenceFormationError");
+					  if( showPOSDetail )
+						  System.out.println("sentenceFormationError");
 					  sentenceFormationErrors++;
 				  }
 			  }
@@ -360,19 +361,22 @@ public class SpellCheck
 			  {
 				  if( (i+1) < tags.length && tags[i+1].contains("VB") )
 				  {
-					  System.out.println("auxVerb");
+					  if( showPOSDetail )
+						  System.out.println("auxVerb");
 					  auxVerb++;
 				  }
 				  else if( (i+1) < tags.length && !tag[i+1].contains("O") )
 				  {
-					  System.out.println("mainVerb");
+					  if( showPOSDetail )
+						  System.out.println("mainVerb");
 					  mainVerb++;
 					  
 					  // Main verb cannot be start of a sentence
 					  if( i == 0 || ((i-1 >= 0) && tag[i-1].contains("O")) && tags[i-1].contains(".") && !tag[i].contains("O") )
 					  {
-						System.out.println("sentenceFormationError - Main verb starting sentence");
-						sentenceFormationErrors++;
+						  if( showPOSDetail )
+							  System.out.println("sentenceFormationError - Main verb starting sentence");
+						  sentenceFormationErrors++;
 					  }
 				  }
 			  }
@@ -393,7 +397,8 @@ public class SpellCheck
 					  // Sentences with subordinating conjunction must have > 1 main verbs or a gerund
 					  if( mainVerb < 2 )
 					  {
-						  System.out.println("sentenceFormationError main verb count < 2: " + mainVerb);
+						  if( showPOSDetail )
+							  System.out.println("sentenceFormationError main verb count < 2: " + mainVerb);
 						  sentenceFormationErrors++;
 					  }
 				  }
@@ -458,7 +463,8 @@ public class SpellCheck
 			  
 			  if( sent[i].contains("be") && tags[i+1].equals("RB") )
 			  {
-				  System.out.println("be followed by RB error");
+				  if( showPOSDetail )
+					  System.out.println("be followed by RB error");
 				  verbErrors++;
 			  }
 			  
@@ -524,9 +530,12 @@ public class SpellCheck
 				  }
 			  }
 		  }
-		  System.out.println("Subject-Verb Errors: "+subjectVerbAgreementErrors);
-		  System.out.println("Other Verb Errors: "+verbErrors);
-		  System.out.println("Sentence Formation Errors: "+sentenceFormationErrors);
+		  if( showPOSDetail )
+		  {
+			  System.out.println("Subject-Verb Errors: "+subjectVerbAgreementErrors);
+			  System.out.println("Other Verb Errors: "+verbErrors);
+			  System.out.println("Sentence Formation Errors: "+sentenceFormationErrors);
+		  }
 		  //System.out.println();
 		}
 		catch (IOException e) {
